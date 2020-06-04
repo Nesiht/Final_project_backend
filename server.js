@@ -17,6 +17,16 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
+// Reset and rebuild databse
+if (process.env.RESET_DATABASE) {
+
+  const deleteDatabase = async () => {
+      await User.deleteMany();
+      console.log(`Deleting User databse`)
+  };
+  deleteDatabase();
+}
+
 // Authenticator function, later used on line 57 to only accept authorized user to the enpoint example.
 const authenticateUser = async (req, res, next) =>{
   const user = await User.findOne({accessToken: req.header('Authorization')})
@@ -32,12 +42,12 @@ const authenticateUser = async (req, res, next) =>{
 app.post('/users', async (req, res) => {
   try {
     const { name, email, password } = req.body
-    const user = new User({ name, email, password: bcrypt.hashSync(password) })
+    const user = await new User({ name, email, password: bcrypt.hashSync(password) })
     const saved = await user.save()
 
     res.status(201).json({ userId: saved._id, accessToken: saved.accessToken })
   } catch(err) {
-    res.status(401).json({ message: 'Could not create user', errors:err.errors})
+    res.status(401).json({ message: 'Cant create user, email already exists', err })
   }
 })
 

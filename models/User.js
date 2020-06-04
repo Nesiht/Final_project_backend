@@ -3,12 +3,12 @@ import crypto from 'crypto'
 
 // Name, Password, CreatedAt, Email, AccessToken
 const User = mongoose.model('User', {
-  name:{
+  name: {
     type: String,
-    unique: true,
-    required: true,
     minlength: 2,
-    maxlength: 20
+    maxlength: 20,
+    unique: false,
+    sparse: true,
   },
   password: {
     type: String,
@@ -20,8 +20,8 @@ const User = mongoose.model('User', {
   },
   email: {
     type: String,
+    minlength: 3,
     unique: true,
-    minlength: 3
   },
   accessToken: {
     type: String,
