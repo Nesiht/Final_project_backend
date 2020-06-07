@@ -4,6 +4,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt-nodejs'
 import User from './models/User'
+import Entrie from './models/Entrie'
 
 const listEndpoints = require('express-list-endpoints')
 
@@ -18,11 +19,30 @@ app.use(cors())
 app.use(bodyParser.json())
 
 // Reset and rebuild databse
+if (process.env.RESET_USER) {
+
+  const deleteDatabase = async () => {
+      await User.deleteMany();
+      console.log(`Deleting User database`)
+  };
+  deleteDatabase();
+}
+
+if (process.env.RESET_ENTRIE) {
+
+  const deleteDatabase = async () => {
+      await Entrie.deleteMany();
+      console.log(`Deleting Entrie database`)
+  };
+  deleteDatabase();
+}
+
 if (process.env.RESET_DATABASE) {
 
   const deleteDatabase = async () => {
       await User.deleteMany();
-      console.log(`Deleting User databse`)
+      await Entrie.deleteMany();
+      console.log(`Deleting all data`)
   };
   deleteDatabase();
 }
@@ -67,6 +87,42 @@ app.post('/sessions', async (req, res) => {
     res.json({ message: 'User not found', notFound: true})
   }
 })
+
+// Get all entries by userid. Entpoint is secure
+app.get('/entries/:userid', authenticateUser)
+app.get('/entries/:userid', async (req, res) => {
+  const { userid } = req.params
+
+  let entriesByUser = await Entrie.find({ userid })
+
+  if ( entriesByUser.length > 0 ) {
+    res.json(entriesByUser)
+  } else {
+    res.status(404).json({ message: `No entries found by user: ${userid}`})
+  }
+
+  res.send('This is the entries endpoint')
+})
+
+// Testing
+app.get('/entries/', async (req, res) => {
+  res.send('This is the entries endpoint')
+})
+
+
+// Post new entries. At the moment only title, text, grade and userid is required. The enpoint is secure
+app.post('/entries/', authenticateUser)
+app.post('/entries/', async (req, res) => {
+  try{
+    const { title, text, grade, userid } = req.body
+    const entrie = await new Entrie({ title, text, grade, userid })
+    const saved = await entrie.save()
+    res.status(201).json({ message: 'Successful saved', entryId: saved._id })
+  } catch(err) {
+    res.status(401).json({ message: 'Cant save new entry' , err })
+  }
+})
+
 
 app.get('/', (req, res) => {
   res.send(listEndpoints(app))
