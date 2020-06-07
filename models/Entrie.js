@@ -13,6 +13,9 @@ const Entrie = mongoose.model('Entrie', {
     type: String,
     required: true,
   },
+  grade: {
+    type: Number
+  },
   createdAt: {
     type: Date,
     default: Date.now()
