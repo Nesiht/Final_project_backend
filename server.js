@@ -93,7 +93,7 @@ app.get('/entries/:userid', authenticateUser)
 app.get('/entries/:userid', async (req, res) => {
   const { userid } = req.params
 
-  let entriesByUser = await Entrie.find({ userid })
+  let entriesByUser = await Entrie.find({ userid }).sort({createdAt: 'desc'})
 
   if ( entriesByUser.length > 0 ) {
     res.json(entriesByUser)
