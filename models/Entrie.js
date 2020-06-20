@@ -10,7 +10,7 @@ const Entrie = mongoose.model('Entrie', {
     required: true,
   },
   text: {
-    type: String,
+    type: {},
     required: true,
   },
   grade: {
