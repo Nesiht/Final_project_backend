@@ -18,7 +18,6 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
-// Reset and rebuild databse
 if (process.env.RESET_USER) {
 
   const deleteDatabase = async () => {
@@ -47,7 +46,6 @@ if (process.env.RESET_DATABASE) {
   deleteDatabase();
 }
 
-// Authenticator function, later used on line 57 to only accept authorized user to the enpoint example.
 const authenticateUser = async (req, res, next) =>{
   const user = await User.findOne({accessToken: req.header('Authorization')})
   if(user){
@@ -58,7 +56,6 @@ const authenticateUser = async (req, res, next) =>{
   }
 }
 
-// Registration endpoint using name, email and password to create user.
 app.post('/users', async (req, res) => {
   try {
     const { name, email, password } = req.body
@@ -71,13 +68,11 @@ app.post('/users', async (req, res) => {
   }
 })
 
-// Example of checking if user is already authenticated
 app.get('/secrets', authenticateUser)
 app.get('/secrets', async (req, res) => {
   res.json({ message: 'Super secret endpoint with your accesstoken and user id!' })
 })
 
-// Validate user trying to log in. if username and password is correct it will respond with userid and accesstoken for frontend to use later
 app.post('/sessions', async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
 
@@ -88,7 +83,6 @@ app.post('/sessions', async (req, res) => {
   }
 })
 
-// Get all entries by userid. Entpoint is secure
 app.get('/entries/:userid', authenticateUser)
 app.get('/entries/:userid', async (req, res) => {
   const { userid } = req.params
@@ -104,13 +98,6 @@ app.get('/entries/:userid', async (req, res) => {
   res.send('This is the entries endpoint')
 })
 
-// Testing
-app.get('/entries/', async (req, res) => {
-  res.send('This is the entries endpoint')
-})
-
-
-// Post new entries. At the moment only title, text, grade and userid is required. The enpoint is secure
 app.post('/entries/', authenticateUser)
 app.post('/entries/', async (req, res) => {
   try{
@@ -122,7 +109,6 @@ app.post('/entries/', async (req, res) => {
     res.status(401).json({ message: 'Cant save new entry' , err })
   }
 })
-
 
 app.get('/', (req, res) => {
   res.send(listEndpoints(app))

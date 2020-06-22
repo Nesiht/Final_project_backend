@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 
-// Name, Password, CreatedAt, Email, AccessToken
 const User = mongoose.model('User', {
   name: {
     type: String,
