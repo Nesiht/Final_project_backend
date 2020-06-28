@@ -68,11 +68,6 @@ app.post('/users', async (req, res) => {
   }
 })
 
-app.get('/secrets', authenticateUser)
-app.get('/secrets', async (req, res) => {
-  res.json({ message: 'Super secret endpoint with your accesstoken and user id!' })
-})
-
 app.post('/sessions', async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
 
@@ -94,8 +89,6 @@ app.get('/entries/:userid', async (req, res) => {
   } else {
     res.status(404).json({ message: `No entries found by user: ${userid}`})
   }
-
-  res.send('This is the entries endpoint')
 })
 
 app.post('/entries/', authenticateUser)
