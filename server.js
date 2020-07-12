@@ -94,8 +94,8 @@ app.get('/entries/:userid', async (req, res) => {
 app.post('/entries/', authenticateUser)
 app.post('/entries/', async (req, res) => {
   try{
-    const { title, text, grade, userid } = req.body
-    const entrie = await new Entrie({ title, text, grade, userid })
+    const { title, text, grade, userid, date } = req.body
+    const entrie = await new Entrie({ title, text, grade, userid, createdAt: date })
     const saved = await entrie.save()
     res.status(201).json({ message: 'Successful saved', entryId: saved._id })
   } catch(err) {
